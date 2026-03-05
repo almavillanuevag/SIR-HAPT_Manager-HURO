@@ -329,6 +329,9 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+*.spec
+build/
+dist/
 
 # Cake - Uncomment if you are using it
 # tools/**
@@ -402,3 +405,4 @@ FodyWeavers.xsd
 
 # Firebase service account key (DO NOT COMMIT)
 sir-hapt-huro-firebase-adminsdk.json
+
