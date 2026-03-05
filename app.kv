@@ -1,0 +1,1021 @@
+MDScreenManager:
+    id: screen_manager
+    Dashboard:
+        name: "dashboard"
+
+# =================================================================================
+# - DASHBOARD PRINCIPAL  
+# =================================================================================
+<Dashboard>:
+    MDBoxLayout:
+        orientation: 'horizontal'
+                
+        # - FIJA Barra de navegacion  -----------------------------------------     
+        MDNavigationRail:
+            id: rail
+            width: dp(70)
+            anchor: "top"
+            type: "selected"
+            text_color_item_normal: app.theme_cls.opposite_text_color
+            icon_color_item_normal: app.theme_cls.primary_light
+            icon_color_item_active: app.theme_cls.opposite_text_color
+            text_color_item_active: app.theme_cls.opposite_text_color
+            md_bg_color: app.theme_cls.opposite_bg_light
+
+            MDNavigationRailItem:
+                icon: "home"
+                text: "Inicio"
+                on_release: 
+                    screen_manager2.current = "home"
+                    screen_manager2.transition.direction = "right"
+
+            MDNavigationRailItem:
+                icon: "account-details"
+                text: "Usuarios"
+                on_release: 
+                    root.ir_todos()
+
+
+            MDNavigationRailItem:
+                icon: "information"
+                text: "Información"
+                on_release: 
+                    screen_manager2.current = "info"
+                    screen_manager2.transition.direction ="right"
+
+        MDScreenManager:
+            id: screen_manager2
+            Home:
+                name: "home"
+            Users:
+                name: "users"
+            Profile:
+                name: "profile"
+            Information:
+                name: "info"
+            New_User:
+                name: "newuser"
+
+# =================================================================================
+# - PANTALLA DE HOME  - acesos directos a los diferentes tipos
+# =================================================================================
+<Home>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        # -- BARRA SUPERIOR ----------------------------------- 
+        MDBoxLayout:
+            orientation: "horizontal"
+            padding: dp(30)
+            spacing: dp(25)
+            size_hint_y: None
+            height: dp(150)
+            md_bg_color: app.theme_cls.primary_light
+
+            Image:
+                #source: 
+                size_hint_x: None
+                width: dp(120)
+                allow_stretch: True
+                keep_ratio: True
+
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: dp(10)
+
+                MDLabel:
+                    text: "SIR-HAPT Manager"
+                    font_style: "H3"
+                    bold: True
+                    halign: "left"
+                    valign: "middle"
+
+                MDLabel:
+                    text: "Aplicación para gestionar el Sistema Inmersivo de Rehabilitación con Retroalimentación Haptica."
+                    halign: "left"
+                    valign: "middle"
+                    theme_text_color: "Secondary"
+
+        # -------- ZONA CENTRAL -------
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: 20
+            padding: 50
+
+            MDLabel:
+                text: "Administrar usuarios"
+                font_style: "H5"
+                adaptive_height: True
+            
+            # Ir a la pagina de pacientes -----------
+            MDCard:
+                orientation: "vertical"
+                size_hint_y: None
+                height: 100
+                padding: 20
+                elevation: 2
+                ripple_behavior: True
+                on_release: root.ir_todos()
+                
+                MDLabel:
+                    text: "Ver listado de usuarios"
+                    font_style: "H6"
+            
+            # Ir a la pagina de nuevo paciente -----------
+            MDCard:
+                orientation: "vertical"
+                size_hint_y: None
+                height: 100
+                padding: 20
+                elevation: 2
+                ripple_behavior: True
+                on_release: root.abrir_nuevo_usuario()
+                
+                MDLabel:
+                    text: "Registrar nuevo usuario"
+                    font_style: "H6"
+            
+            Widget:
+                size_hint_y: None
+                height: 10
+
+            # Tabla resumen de los grupos -----------
+            MDLabel:
+                text: "Usuarios por grupo"
+                font_style: "H5"
+                size_hint_y: None
+                adaptive_height: True
+
+            # Cabecera tabla
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: 40
+                padding: [dp(16), 0]
+                md_bg_color: app.theme_cls.primary_dark
+
+                MDLabel:
+                    text: "Tipo de retroalimentación"
+                    font_style: "Subtitle2"
+                    bold: True
+                    size_hint_x: 0.5
+                    halign: "left"
+                    valign: "center"
+                    theme_text_color: "Custom"
+                    text_color: 1,1,1,1
+                MDLabel:
+                    text: "Participantes"
+                    font_style: "Subtitle2"
+                    bold: True
+                    size_hint_x: 0.2
+                    halign: "center"
+                    valign: "center"
+                    theme_text_color: "Custom"
+                    text_color: 1,1,1,1
+                MDLabel:
+                    text: "Ver lista de pacientes de este grupo"
+                    font_style: "Subtitle2"
+                    bold: True
+                    size_hint_x: 0.3
+                    halign: "center"
+                    valign: "center"
+                    theme_text_color: "Custom"
+                    text_color: 1,1,1,1
+
+            # Fila: Sin Retro
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: 30
+                padding: 10
+                spacing: 5
+
+                MDLabel:
+                    text: "Sin retroalimentación"
+                    size_hint_x: 0.5
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDLabel:
+                    id: cnt_nofb
+                    text: "—"
+                    font_style: "H6"
+                    bold: True
+                    size_hint_x: 0.2
+                    halign: "center"
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDIconButton:
+                    icon: "eye"
+                    size_hint_x: 0.3
+                    pos_hint: {"center_y": 0.5}
+                    icon_size: "20sp" 
+                    theme_icon_color: "Custom"
+                    icon_color: app.theme_cls.text_color
+                    on_release: root.ir_grupo("NoFeedback")
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(1)
+
+            # Fila: Visual
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: 30
+                padding: 10
+                spacing: 5
+
+                MDLabel:
+                    text: "Retroalimentación visual"
+                    size_hint_x: 0.5
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDLabel:
+                    id: cnt_vis
+                    text: "—"
+                    font_style: "H6"
+                    bold: True
+                    size_hint_x: 0.2
+                    halign: "center"
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDIconButton:
+                    icon: "eye"
+                    size_hint_x: 0.3
+                    pos_hint: {"center_y": 0.5}
+                    icon_size: "20sp" 
+                    theme_icon_color: "Custom"
+                    icon_color: app.theme_cls.text_color
+                    on_release: root.ir_grupo("VisualFeedback")
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(1)
+
+            # Fila: Háptica
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: 30
+                padding: 10
+                spacing: 5
+
+                MDLabel:
+                    text: "Retroalimentación háptica"
+                    size_hint_x: 0.5
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDLabel:
+                    id: cnt_hap
+                    text: "—"
+                    font_style: "H6"
+                    bold: True
+                    size_hint_x: 0.2
+                    halign: "center"
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDIconButton:
+                    icon: "eye"
+                    size_hint_x: 0.3
+                    pos_hint: {"center_y": 0.5}
+                    icon_size: "20sp" 
+                    theme_icon_color: "Custom"
+                    icon_color: app.theme_cls.text_color
+                    on_release: root.ir_grupo("HapticFeedback")
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(1)
+
+            # Fila: Visual + Háptica
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: 30
+                padding: 10
+                spacing: 5
+
+                MDLabel:
+                    text: "Retroalimentación háptica y visual"
+                    size_hint_x: 0.5
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDLabel:
+                    id: cnt_mm
+                    text: "—"
+                    font_style: "H6"
+                    bold: True
+                    size_hint_x: 0.2
+                    halign: "center"
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDIconButton:
+                    icon: "eye"
+                    size_hint_x: 0.3
+                    pos_hint: {"center_y": 0.5}
+                    icon_size: "20sp" 
+                    theme_icon_color: "Custom"
+                    icon_color: app.theme_cls.text_color
+                    on_release: root.ir_grupo("MultimodalFeedback")
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(1)
+
+            # Fila: Háptica sin tubo
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: 30
+                padding: 10
+                spacing: 5
+
+                MDLabel:
+                    text: "Retroalimentación háptica sin tubo visual"
+                    size_hint_x: 0.5
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDLabel:
+                    id: cnt_hwt
+                    text: "—"
+                    font_style: "H6"
+                    bold: True
+                    size_hint_x: 0.2
+                    halign: "center"
+                    valign: "center"
+                    theme_text_color: "Custom"
+
+                MDIconButton:
+                    icon: "eye"
+                    size_hint_x: 0.3
+                    pos_hint: {"center_y": 0.5}
+                    icon_size: "20sp" 
+                    theme_icon_color: "Custom"
+                    icon_color: app.theme_cls.text_color
+                    on_release: root.ir_grupo("HapticWithoutTube")
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(1)
+
+            Widget:
+
+# =================================================================================
+# - PANTALLA DE USERS - listado de usuarios 
+# =================================================================================
+<Users>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: 50
+        spacing: 20
+
+        MDBoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: 20
+            padding: 20
+
+            MDTextField:
+                id: search_field
+                mode: "round"
+                icon_left: "magnify"
+                hint_text: "Buscar paciente por ID"
+                size_hint_x: 0.75
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                on_text: root.buscar(self.text)
+
+            AnchorLayout:
+                size_hint_x: 0.08
+                anchor_x: "center"
+                anchor_y: "center"
+
+                MDIconButton:
+                    icon: "head-plus"
+                    icon_size: "50sp"
+                    on_release: root.abrir_nuevo_usuario()
+
+        Widget:
+            size_hint_y: 0.01
+
+        MDCard:
+            size_hint: 0.95, 1
+            pos_hint: {"center_x": 0.5}   
+            padding: 20
+            spacing: 10
+            elevation: 1                 
+            radius: [10,]
+
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: 5
+
+                # --- Header con botón de refresh ---
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: 40
+                    padding: 5
+                    spacing: 10
+
+                    MDLabel:
+                        id: titulo_lista
+                        text: "Lista de participantes"
+                        font_style: "Subtitle1"
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_color
+                        bold: True
+                        size_hint_x: 0.5
+
+                    MDFillRoundFlatIconButton:
+                        id: btn_descargar_grupo  
+                        text: "Descargar métricas del grupo"
+                        icon: "download"
+                        size_hint_x: None
+                        pos_hint: {"center_y": 0.5}
+                        disabled: True
+                        opacity: 0
+                        on_release: root.descargar_grupo()
+
+                    MDIconButton:
+                        icon: "refresh"
+                        icon_size: "28sp"
+                        size_hint_x: None
+                        width: dp(40)
+                        pos_hint: {"center_y": 0.5}
+                        theme_icon_color: "Custom"
+                        icon_color: app.theme_cls.primary_color
+                        on_release: root.cargar_usuarios()
+
+                # --- Lista de pacientes ---
+                MDScrollView:
+                    do_scroll_x: False
+                    MDBoxLayout:
+                        id: users_list
+                        orientation: "vertical"
+                        adaptive_height: True
+                        size_hint_y: None
+                        height: self.minimum_height
+
+# =================================================================================
+# - PANTALLA DE NUEVO USUARIO - registrar un nuevo usuario
+# =================================================================================
+<New_User>:
+    name: "newuser"
+
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: dp(30)
+        spacing: dp(20)
+
+        # ---------- TÍTULO SUPERIOR ----------
+        MDLabel:
+            id: titulo_form
+            text: "Registrar nuevo usuario"
+            font_style: "H2"
+            bold: True
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
+            halign: "center"
+            size_hint_y: 0.1
+
+        # ---------- CARD CENTRAL ----------
+        MDCard:
+            size_hint: None, None
+            width: 700
+            height: 800
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            elevation: 2
+            padding: 50
+            spacing: 20
+            orientation: "vertical"
+            radius: [20]
+
+            # --- ID Usuario ---
+            MDTextField:
+                id: user_id
+                hint_text: "Asignar ID"
+                icon_right: "account"
+                size_hint_x: None
+                width: 400
+                font_size: 18
+                pos_hint: {"center_x": 0.5}
+                helper_text: "Campo obligatorio"
+                helper_text_mode: "on_error"
+
+            # --- Modalidad ---
+            MDLabel:
+                text: "Modalidad de juego"
+                bold: True
+                size_hint_y: None
+                height: 20
+
+            MDGridLayout:
+                cols: 1
+                adaptive_height: True
+                spacing: 2
+
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: dp(36)
+                    MDCheckbox:
+                        group: "grupo"
+                        size_hint: None, None
+                        size: 50, 30 
+                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                        on_active: if self.active: root.sel_grupo("NoFeedback")
+                    MDLabel:
+                        text: "Sin retroalimentación"
+
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: dp(36)
+                    MDCheckbox:
+                        group: "grupo"
+                        size_hint: None, None
+                        size: 50, 30 
+                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                        on_active: if self.active: root.sel_grupo("VisualFeedback")
+                    MDLabel:
+                        text: "Retroalimentación visual"
+
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: dp(36)
+                    MDCheckbox:
+                        group: "grupo"
+                        size_hint: None, None
+                        size: 50, 30 
+                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                        on_active: if self.active: root.sel_grupo("HapticFeedback")
+                    MDLabel:
+                        text: "Retroalimentación háptica"
+
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: dp(36)
+                    MDCheckbox:
+                        group: "grupo"
+                        size_hint: None, None
+                        size: 50, 30 
+                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                        on_active: if self.active: root.sel_grupo("MultimodalFeedback")
+                    MDLabel:
+                        text: "Retroalimentación visual y háptica"
+
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: dp(36)
+                    MDCheckbox:
+                        group: "grupo"
+                        size_hint: None, None
+                        size: 50, 30 
+                        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                        on_active: if self.active: root.sel_grupo("HapticWithoutTube")
+                    MDLabel:
+                        text: "Retroalimentación háptica sin tubo"
+            
+            Widget:
+                size_hint_y: None
+                height: 1
+
+            # --- Trayectorias ---
+            MDLabel:
+                text: "Trayectorias a incluir"
+                bold: True
+                theme_text_color: "Primary"
+                size_hint_y: None
+                height: 20
+
+            MDGridLayout:
+                cols: 5
+                spacing: dp(10)
+                size_hint_y: None
+                height: 20
+
+                MDBoxLayout:
+                    MDCheckbox:
+                        active: True
+                        pos_hint: {"center_y": 0.5}
+                        size_hint: None, None
+                        size: dp(30), dp(30)
+                        on_active: root.toggle_trayectoria("T1", self.active)
+                    MDLabel:
+                        text: "T1"
+
+                MDBoxLayout:
+                    MDCheckbox:
+                        active: True
+                        pos_hint: {"center_y": 0.5}
+                        size_hint: None, None
+                        size: dp(30), dp(30)
+                        on_active: root.toggle_trayectoria("T2", self.active)
+                    MDLabel:
+                        text: "T2"
+
+                MDBoxLayout:
+                    MDCheckbox:
+                        active: True
+                        pos_hint: {"center_y": 0.5}
+                        size_hint: None, None
+                        size: dp(30), dp(30)
+                        on_active: root.toggle_trayectoria("T3", self.active)
+                    MDLabel:
+                        text: "T3"
+
+                MDBoxLayout:
+                    MDCheckbox:
+                        active: True
+                        pos_hint: {"center_y": 0.5}
+                        size_hint: None, None
+                        size: dp(30), dp(30)
+                        on_active: root.toggle_trayectoria("T4", self.active)
+                    MDLabel:
+                        text: "T4"
+
+                MDBoxLayout:
+                    MDCheckbox:
+                        active: True
+                        pos_hint: {"center_y": 0.5}
+                        size_hint: None, None
+                        size: dp(30), dp(30)
+                        on_active: root.toggle_trayectoria("T5", self.active)
+                    MDLabel:
+                        text: "T5"
+
+            Widget:
+                size_hint_y: None
+                height: 1
+
+            # --- Repeticiones ---
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(56)
+                spacing: dp(12)
+
+                MDLabel:
+                    text: "Repeticiones por trayectoria"
+                    bold: True
+                    size_hint_x: 0.65
+
+                MDTextField:
+                    id: reps_field
+                    text: "10"
+                    input_filter: "int"
+                    size_hint_x: 0.15
+                    pos_hint: {"center_y": 0.5}
+
+            # --- Error ---
+            MDLabel:
+                id: lbl_error
+                text: ""
+                font_style: "Caption"
+                theme_text_color: "Error"
+                size_hint_y: None
+                height: 5
+
+            # --- Botones ---
+            MDBoxLayout:
+                size_hint_y: None
+                height: dp(70)
+                spacing: dp(20)
+                padding: [0, dp(10)]
+
+                MDRoundFlatButton:
+                    text: "Cancelar"
+                    icon: "close"
+                    size_hint_x: 0.4
+                    on_release: root.cancelar()
+
+                Widget:
+
+                MDFillRoundFlatButton:
+                    id: btn_guardar
+                    text: "Guardar usuario"
+                    icon: "content-save"
+                    size_hint_x: 0.5
+                    on_release: root.guardar_paciente()
+
+# =================================================================================
+# - PANTALLA DE PROFILE  - detalles e información del perfil (userID) seleccionado
+# =================================================================================
+<Profile>:
+    MDBoxLayout:
+        orientation: "vertical"
+        md_bg_color: app.theme_cls.bg_light
+
+        MDBoxLayout:
+            size_hint_y: None
+            height: dp(56)
+            padding: [dp(12), dp(8)]
+            spacing: dp(8)
+            md_bg_color: app.theme_cls.bg_normal
+
+            MDIconButton:
+                icon: "arrow-left"
+                pos_hint: {"center_y": 0.5}
+                on_release: root.volver()
+
+            MDLabel:
+                id: title_profile
+                text: "Perfil del participante"
+                font_style: "H6"
+                bold: True
+                valign: "center"
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_dark
+
+            Widget:
+
+            MDIconButton:
+                icon: "refresh"
+                pos_hint: {"center_y": 0.5}
+                on_release: root.refresh()
+
+        # -- Contenido: info + tabla ---------------------------------------
+        MDBoxLayout:
+            orientation: "horizontal"
+            padding: [dp(30), dp(20)]
+            spacing: dp(30)
+
+            # -- Panel izquierdo: info -------------------------------------
+            MDBoxLayout:
+                orientation: "vertical"
+                size_hint_x: 0.28
+                spacing: dp(10)
+                
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: dp(32)
+                    spacing: dp(8)
+
+                    MDLabel:
+                        text: "Información del Participante"
+                        font_style: "Subtitle1"
+                        bold: True
+                        size_hint_y: None
+                        height: dp(28)
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+
+                    #
+                    MDIconButton:
+                        icon: "pencil"
+                        size_hint: None, None
+                        size: dp(32), dp(32)
+                        pos_hint: {"center_y": 0.5}
+                        theme_icon_color: "Custom"
+                        icon_color: app.theme_cls.primary_color
+                        on_release: root.abrir_edicion()
+
+                MDSeparator:
+                    size_hint_y: None
+                    height: dp(2)
+
+                # ID
+                MDBoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(50)
+                    spacing: dp(2)
+                    MDLabel:
+                        text: "ID"
+                        font_style: "Caption"
+                        theme_text_color: "Hint"
+                        size_hint_y: None
+                        height: dp(16)
+                    MDLabel:
+                        id: lbl_uid
+                        text: "—"
+                        font_style: "H5"
+                        bold: True
+
+                # Grupo
+                MDBoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: 140
+                    spacing: dp(2)
+                    MDLabel:
+                        text: "Configuración"
+                        font_style: "Caption"
+                        theme_text_color: "Hint"
+                        size_hint_y: None
+                        height: dp(16)
+                    MDLabel:
+                        id: lbl_grupo
+                        text: "—"
+                        font_style: "Subtitle1"
+                        bold: True
+
+                # Estado (semáforo)
+                MDBoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(50)
+                    spacing: dp(2)
+                    MDLabel:
+                        text: "Estado de Sesión"
+                        font_style: "Caption"
+                        theme_text_color: "Hint"
+                        size_hint_y: None
+                        height: dp(16)
+                    MDLabel:
+                        id: lbl_status
+                        text: "—"
+                        font_style: "Subtitle1"
+                        bold: True
+
+                # Progreso
+                MDBoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(50)
+                    spacing: dp(2)
+                    MDLabel:
+                        text: "Progreso"
+                        font_style: "Caption"
+                        theme_text_color: "Hint"
+                        size_hint_y: None
+                        height: dp(16)
+                    MDLabel:
+                        id: lbl_progreso
+                        text: "0 / 50 repeticiones"
+                        font_style: "Subtitle1"
+
+                MDSeparator:
+                    size_hint_y: None
+                    height: dp(1)
+
+                # Botones de descarga con icono 
+                MDFillRoundFlatIconButton:
+                    id: btn_dl_metricas
+                    text: "Descargar Métricas"
+                    icon: "download"
+                    size_hint_x: 1
+                    # El icono aparece a la izquierda por defecto
+                    md_bg_color: app.theme_cls.primary_color
+                    disabled: True
+                    opacity: 0.4
+                    on_release: root.descargar_metricas()
+
+                MDRoundFlatIconButton:
+                    id: btn_dl_vectores
+                    text: "Descargar Todos los Vectores"
+                    icon: "download"
+                    size_hint_x: 1
+                    # Para que el texto y el icono sean del color primario
+                    text_color: app.theme_cls.primary_color
+                    icon_color: app.theme_cls.primary_color
+                    line_color: app.theme_cls.primary_color
+                    on_release: root.descargar_todos_vectores()
+                
+                Widget: 
+                
+                MDRaisedButton:
+                    text: "Eliminar usuario y todos sus datos"
+                    md_bg_color: 0.85, 0.18, 0.18, 1
+                    size_hint_x: 1
+                    on_release: root.confirmar_eliminar_usuario()
+
+                Widget:
+                    size_hint_y: None
+                    height: 15
+
+            # -- Panel derecho: tabla de sesiones --------------------------
+            MDBoxLayout:
+                orientation: "vertical"
+                size_hint_x: 0.72
+                spacing: dp(8)
+
+                MDLabel:
+                    text: "Historial de Repeticiones"
+                    font_style: "Subtitle1"
+                    bold: True
+                    size_hint_y: None
+                    height: dp(28)
+                    theme_text_color: "Custom"
+                    text_color: app.theme_cls.primary_dark
+
+                MDSeparator:
+                    size_hint_y: None
+                    height: dp(2)
+
+                # Cabecera de tabla
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: dp(36)
+                    padding: [dp(4), 0]
+                    md_bg_color: app.theme_cls.primary_light
+
+                    MDLabel:
+                        text: "#"
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_x: 0.08
+                        halign: "center"
+                        valign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 1,1,1,1
+                    MDLabel:
+                        text: "Trayectoria"
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_x: 0.12
+                        halign: "center"
+                        valign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 1,1,1,1
+                    MDLabel:
+                        text: "Rep."
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_x: 0.10
+                        halign: "center"
+                        valign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 1,1,1,1
+                    MDLabel:
+                        text: "Errores"
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_x: 0.10
+                        halign: "center"
+                        valign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 1,1,1,1
+                    MDLabel:
+                        text: "Stars"
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_x: 0.10
+                        halign: "center"
+                        valign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 1,1,1,1
+                    MDLabel:
+                        text: "% Dentro"
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_x: 0.12
+                        halign: "center"
+                        valign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 1,1,1,1
+                    MDLabel:
+                        text: "Tiempo"
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_x: 0.10
+                        halign: "center"
+                        valign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 1,1,1,1
+                    MDLabel:
+                        text: "Puntos"
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_x: 0.10
+                        halign: "center"
+                        valign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 1,1,1,1
+                    MDLabel:
+                        text: "Vector"
+                        font_style: "Subtitle2"
+                        bold: True
+                        size_hint_x: 0.18
+                        halign: "center"
+                        valign: "center"
+                        theme_text_color: "Custom"
+                        text_color: 1,1,1,1
+
+                # Cuerpo scrollable
+                MDScrollView:
+                    do_scroll_x: False
+
+                    MDBoxLayout:
+                        id: tabla_body
+                        orientation: "vertical"
+                        adaptive_height: True
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: [dp(4), 0]
+
+# =================================================================================
+# - PANTALLA DE INFORMATION  
+# =================================================================================
+<Information>:
+    MDLabel:
+        text: "Pantalla de information..."
+

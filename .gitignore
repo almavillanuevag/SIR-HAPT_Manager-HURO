@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Firebase service account key (DO NOT COMMIT)
+sir-hapt-huro-firebase-adminsdk.json
