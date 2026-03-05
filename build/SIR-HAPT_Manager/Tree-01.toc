@@ -1,9 +1,0 @@
-('C:\\Users\\acris\\Python Kivy Projects\\SIR-HAPT_Manager '
- 'HURO\\venv\\share\\glew\\bin',
- None,
- [],
- 'DATA',
- [('glew32.dll',
-   'C:\\Users\\acris\\Python Kivy Projects\\SIR-HAPT_Manager '
-   'HURO\\venv\\share\\glew\\bin\\glew32.dll',
-   'DATA')])
