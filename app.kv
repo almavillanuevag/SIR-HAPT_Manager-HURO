@@ -73,7 +73,8 @@ MDScreenManager:
             md_bg_color: app.theme_cls.primary_light
 
             Image:
-                #source: 
+                id: img_logo
+                source: "logo.png"
                 size_hint_x: None
                 width: dp(120)
                 allow_stretch: True
@@ -922,7 +923,7 @@ MDScreenManager:
                         text: "#"
                         font_style: "Subtitle2"
                         bold: True
-                        size_hint_x: 0.08
+                        size_hint_x: 0.1
                         halign: "center"
                         valign: "center"
                         theme_text_color: "Custom"
@@ -931,7 +932,7 @@ MDScreenManager:
                         text: "Trayectoria"
                         font_style: "Subtitle2"
                         bold: True
-                        size_hint_x: 0.12
+                        size_hint_x: 0.1
                         halign: "center"
                         valign: "center"
                         theme_text_color: "Custom"
@@ -940,7 +941,7 @@ MDScreenManager:
                         text: "Rep."
                         font_style: "Subtitle2"
                         bold: True
-                        size_hint_x: 0.10
+                        size_hint_x: 0.1
                         halign: "center"
                         valign: "center"
                         theme_text_color: "Custom"
@@ -949,7 +950,7 @@ MDScreenManager:
                         text: "Errores"
                         font_style: "Subtitle2"
                         bold: True
-                        size_hint_x: 0.10
+                        size_hint_x: 0.1
                         halign: "center"
                         valign: "center"
                         theme_text_color: "Custom"
@@ -958,7 +959,7 @@ MDScreenManager:
                         text: "Stars"
                         font_style: "Subtitle2"
                         bold: True
-                        size_hint_x: 0.10
+                        size_hint_x: 0.3
                         halign: "center"
                         valign: "center"
                         theme_text_color: "Custom"
@@ -967,7 +968,7 @@ MDScreenManager:
                         text: "% Dentro"
                         font_style: "Subtitle2"
                         bold: True
-                        size_hint_x: 0.12
+                        size_hint_x: 0.1
                         halign: "center"
                         valign: "center"
                         theme_text_color: "Custom"
@@ -976,16 +977,7 @@ MDScreenManager:
                         text: "Tiempo"
                         font_style: "Subtitle2"
                         bold: True
-                        size_hint_x: 0.10
-                        halign: "center"
-                        valign: "center"
-                        theme_text_color: "Custom"
-                        text_color: 1,1,1,1
-                    MDLabel:
-                        text: "Puntos"
-                        font_style: "Subtitle2"
-                        bold: True
-                        size_hint_x: 0.10
+                        size_hint_x: 0.1
                         halign: "center"
                         valign: "center"
                         theme_text_color: "Custom"
@@ -994,7 +986,7 @@ MDScreenManager:
                         text: "Vector"
                         font_style: "Subtitle2"
                         bold: True
-                        size_hint_x: 0.18
+                        size_hint_x: 0.1
                         halign: "center"
                         valign: "center"
                         theme_text_color: "Custom"
@@ -1013,9 +1005,272 @@ MDScreenManager:
                         padding: [dp(4), 0]
 
 # =================================================================================
-# - PANTALLA DE INFORMATION  
+# - PANTALLA DE INFORMATION
 # =================================================================================
 <Information>:
-    MDLabel:
-        text: "Pantalla de information..."
+    MDScrollView:
+        do_scroll_x: False
+
+        MDBoxLayout:
+            orientation: "vertical"
+            padding: [dp(60), dp(40)]
+            spacing: dp(30)
+            adaptive_height: True
+            size_hint_y: None
+            height: self.minimum_height
+
+            #  Logos / encabezado institucional 
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: dp(80)
+                spacing: dp(20)
+
+                Image:
+                    id: img_logo
+                    source: "logo.png"
+                    size_hint_x: None
+                    width: dp(80)
+                    allow_stretch: True
+                    keep_ratio: True
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    spacing: dp(4)
+
+                    MDLabel:
+                        text: "SIR-HAPT Manager"
+                        font_style: "H4"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_color
+                        size_hint_y: None
+                        height: dp(40)
+
+                    MDLabel:
+                        text: "Sistema Inmersivo de Rehabilitación con Retroalimentación Háptica"
+                        font_style: "Subtitle1"
+                        theme_text_color: "Secondary"
+                        size_hint_y: None
+                        height: dp(28)
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(2)
+
+            # ── Instituciones ─────────────────────────────────────────────
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: dp(100)
+                spacing: dp(40)
+                padding: [dp(10), 0]
+
+                # UDEM
+                MDBoxLayout:
+                    orientation: "vertical"
+                    spacing: dp(6)
+
+                    MDLabel:
+                        text: "Universidad de Monterrey"
+                        font_style: "Subtitle1"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+                        size_hint_y: None
+                        height: dp(24)
+
+                    MDLabel:
+                        text: "UDEM - Departamento de Ingeniería Biomédica"
+                        font_style: "Body1"
+                        size_hint_y: None
+                        height: dp(22)
+
+                    MDLabel:
+                        text: "San Pedro Garza García, México"
+                        font_style: "Body2"
+                        theme_text_color: "Hint"
+                        size_hint_y: None
+                        height: dp(20)
+
+                MDSeparator:
+                    orientation: "vertical"
+                    size_hint_x: None
+                    width: dp(1)
+
+                # HURO / UA
+                MDBoxLayout:
+                    orientation: "vertical"
+                    spacing: dp(6)
+
+                    MDLabel:
+                        text: "HumanRobotics HURO"
+                        font_style: "Subtitle1"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_dark
+                        size_hint_y: None
+                        height: dp(24)
+
+                    MDLabel:
+                        text: "UA - Universidad de Alicante"
+                        font_style: "Body1"
+                        size_hint_y: None
+                        height: dp(22)
+
+                    MDLabel:
+                        text: "Alicante, España"
+                        font_style: "Body2"
+                        theme_text_color: "Hint"
+                        size_hint_y: None
+                        height: dp(20)
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(1)
+
+            # ── Autora ────────────────────────────────────────────────────
+            MDBoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: dp(110)
+                spacing: dp(8)
+                padding: [dp(10), 0]
+
+                MDLabel:
+                    text: "Proyecto de Evaluación Final"
+                    font_style: "Subtitle1"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: app.theme_cls.primary_dark
+                    size_hint_y: None
+                    height: dp(24)
+
+                MDLabel:
+                    text: "Alma Cristina Villanueva Guzmán"
+                    font_style: "H6"
+                    bold: True
+                    size_hint_y: None
+                    height: dp(28)
+
+                MDLabel:
+                    text: "Ingeniería Biomédica"
+                    font_style: "Body1"
+                    theme_text_color: "Secondary"
+                    size_hint_y: None
+                    height: dp(22)
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(1)
+
+            # ── Asesora y sinodales ───────────────────────────────────────
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: dp(110)
+                spacing: dp(40)
+                padding: [dp(10), 0]
+
+                # Asesora
+                MDBoxLayout:
+                    orientation: "vertical"
+                    spacing: dp(6)
+
+                    MDLabel:
+                        text: "Asesora"
+                        font_style: "Caption"
+                        theme_text_color: "Hint"
+                        size_hint_y: None
+                        height: dp(18)
+
+                    MDLabel:
+                        text: "Irma Nayeli Angulo Sherman"
+                        font_style: "Subtitle1"
+                        bold: True
+                        size_hint_y: None
+                        height: dp(24)
+
+                # Sinodales
+                MDBoxLayout:
+                    orientation: "vertical"
+                    spacing: dp(6)
+
+                    MDLabel:
+                        text: "Sinodales"
+                        font_style: "Caption"
+                        theme_text_color: "Hint"
+                        size_hint_y: None
+                        height: dp(18)
+
+                    MDLabel:
+                        text: "Andrés Ubeda"
+                        font_style: "Subtitle1"
+                        bold: True
+                        size_hint_y: None
+                        height: dp(24)
+
+                    MDLabel:
+                        text: "Gabriel J. García"
+                        font_style: "Subtitle1"
+                        bold: True
+                        size_hint_y: None
+                        height: dp(24)
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(1)
+
+            # ── Repositorio Unity ─────────────────────────────────────────
+            MDBoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: dp(90)
+                spacing: dp(8)
+                padding: [dp(10), 0]
+
+                MDLabel:
+                    text: "Repositorio Unity — Sistema de Juego (SG)"
+                    font_style: "Subtitle1"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: app.theme_cls.primary_dark
+                    size_hint_y: None
+                    height: dp(24)
+
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: dp(40)
+                    spacing: dp(12)
+
+                    MDLabel:
+                        id: lbl_repo
+                        text: "https://github.com/almavillanuevag/SIR-HAPT_HURO"
+                        font_style: "Body1"
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_color
+                        valign: "center"
+
+                    MDIconButton:
+                        icon: "content-copy"
+                        size_hint: None, None
+                        size: dp(36), dp(36)
+                        pos_hint: {"center_y": 0.5}
+                        theme_icon_color: "Custom"
+                        icon_color: app.theme_cls.primary_color
+                        on_release: root.copiar_repo()
+
+            MDSeparator:
+                size_hint_y: None
+                height: dp(1)
+
+            # ── Versión ───────────────────────────────────────────────────
+            MDLabel:
+                text: "SIR-HAPT Manager v1.0 - 2026"
+                font_style: "Caption"
+                theme_text_color: "Hint"
+                halign: "center"
+                size_hint_y: None
+                height: dp(30)
 

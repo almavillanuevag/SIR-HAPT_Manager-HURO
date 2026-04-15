@@ -29,8 +29,6 @@ def resource_path(relative_path):
 
 # Ruta dinámica al JSON
 cred_path = resource_path("sir-hapt-huro-firebase-adminsdk.json")
-logo_path = resource_path("logo.png")
-print(logo_path)
 
 # Inicializar credenciales
 cred = credentials.Certificate(cred_path)
@@ -109,10 +107,8 @@ TRAYECTORIAS         = ["T1", "T2", "T3", "T4", "T5"]
 
 # --- Funciones -------------------------------------------------------------------
 def session_status(current_rep, total):
-    if current_rep <= 1:
-        return "pending"
-    if current_rep - 1 >= total:
-        return "completed"
+    if current_rep <= 0:      return "pending"
+    if current_rep >= total:  return "completed"
     return "in_progress"
 
 def status_color(status):
@@ -129,20 +125,59 @@ def status_label(status):
         "pending":     "Sin iniciar",
     }.get(status, "—")
 
-def guardar_csv(filas, nombre_archivo):
+# ==========================================================================================
+# Funciones para guardar CSV 
+import pathlib
+
+def get_export_path(*subcarpetas):
+    """
+    Construye y crea la ruta:
+    Documents/SIR-HAPT-Exports/<subcarpeta1>/<subcarpeta2>/...
+    Funciona en Windows en español e inglés, y sobrevive a yInstaller.
+    """
+    documents = pathlib.Path.home() 
+    
+    ruta = documents / "SIR-HAPT-Exports"
+    for sub in subcarpetas:
+        # Sanear el nombre para que sea válido como nombre de carpeta
+        sub_seguro = str(sub).replace("/", "-").replace("\\", "-").replace(":", "-")
+        ruta = ruta / sub_seguro
+
+    ruta.mkdir(parents=True, exist_ok=True)
+    return ruta
+
+
+def guardar_csv(filas, nombre_archivo, *subcarpetas):
+    """
+    Guarda el CSV en Documents/SIR-HAPT-Exports/<subcarpetas>/nombre_archivo
+    Si el archivo ya existe, agrega un sufijo numérico para no sobreescribir.
+    """
     if not filas:
-        print("[CSV] Sin datos")
-        return
-    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
-    ruta = os.path.join(desktop, nombre_archivo)
+        print("[CSV] Sin datos para exportar")
+        return None
+
+    carpeta = get_export_path(*subcarpetas)
+    
+    # Evitar sobreescritura: si existe, agregar _1, _2, etc.
+    base    = pathlib.Path(nombre_archivo).stem
+    ext     = pathlib.Path(nombre_archivo).suffix or ".csv"
+    archivo = carpeta / nombre_archivo
+
+    contador = 1
+    while archivo.exists():
+        archivo = carpeta / f"{base}_{contador}{ext}"
+        contador += 1
+
     try:
-        with open(ruta, "w", newline="", encoding="utf-8") as f:
+        with open(archivo, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=list(filas[0].keys()))
             writer.writeheader()
             writer.writerows(filas)
-        print(f"[CSV] Guardado: {ruta}")
+        print(f"[CSV] Guardado: {archivo}")
+        return str(archivo)
     except Exception as e:
         print(f"[CSV] Error: {e}")
+        return None
 
 
 # ==========================================================================================
@@ -164,6 +199,10 @@ class Dashboard(MDScreen):
 class Home(MDScreen):
 
     def on_enter(self):
+        try:
+            self.ids.img_logo.source = resource_path("logo.png")
+        except Exception:
+            pass
         Clock.schedule_once(self.cargar_resumen, 0.2)
 
     def cargar_resumen(self, dt=None):
@@ -275,17 +314,15 @@ class Users(MDScreen):
             docConf = db.collection("UnityConfig").document(d["_id"]).get()
             if docConf.exists:
                 conf = docConf.to_dict()
-                current_rep = conf.get("CurrentRepetition", 1)
+                current_rep = conf.get("CurrentRepetition", 1)-1
             else:
-                current_rep = 1
+                current_rep = 0
             
             total = d.get("totalReps", 0)
             status = session_status(current_rep, total)
             sc     = status_color(status)
 
-            comp = max(0, current_rep - 1)
-            status = session_status(current_rep, total)
-
+            comp = max(0, current_rep)
             row = MDBoxLayout(
                 orientation="horizontal",
                 size_hint_y=None, height=dp(48),
@@ -362,7 +399,7 @@ class Users(MDScreen):
             filas = []
             for doc in docs:
                 uid = doc.id
-                for s in db.collection("Users").document(uid).collection("Sessions").stream():
+                for s in db.collection("Users").document(uid).collection("Sesiones").stream():
                     sd = s.to_dict()
                     filas.append({
                         "UserID":               uid,
@@ -375,7 +412,7 @@ class Users(MDScreen):
                         "InsideTimePercentage": sd.get("InsideTimePercentage", ""),
                         "Stars":                sd.get("stars", "")
                     })
-            guardar_csv(filas, f"{filtro}_metrics.csv")
+            guardar_csv(filas, f"{filtro}_metrics.csv", "Descargas por grupo")
         except Exception as e:
             print(f"[Descargar grupo] Error: {e}")
 
@@ -534,7 +571,9 @@ class New_User(MDScreen):
 # PROFILE  — perfil del participante
 # ==========================================================================================
 class Profile(MDScreen):
-    _uid      = None
+    from kivymd.uix.label import MDIcon
+
+    _uid = None
     _sesiones = []
 
     def on_enter(self):
@@ -545,6 +584,7 @@ class Profile(MDScreen):
         self._uid = getattr(app, "usuario_actual", None)
         if not self._uid:
             return
+        
         try:
             doc = db.collection("Users").document(self._uid).get()
             if doc.exists:
@@ -560,17 +600,15 @@ class Profile(MDScreen):
         total = d_user.get("totalReps", 0)
         trayectorias_str = ", ".join(d_user.get("trajectoriesIncluded", []))
 
-        docConf = db.collection("UnityConfig").document(self._uid).get()
-        if docConf.exists:
-            conf = docConf.to_dict()
-            current_rep = conf.get("CurrentRepetition", 1)
-        else:
-            current_rep = 1
-
-        comp = max(0, current_rep - 1)
+        try:
+            sesiones_docs = (db.collection("Users").document(self._uid)
+                            .collection("Sesiones").stream())
+            comp = sum(1 for _ in sesiones_docs)
+        except Exception:
+                comp = 0
 
         self._total_reps = total
-        status = session_status(current_rep, total)
+        status = session_status(comp, total)
         sc = status_color(status)
 
         text_info = (
@@ -592,7 +630,7 @@ class Profile(MDScreen):
     def _cargar_sesiones(self):
         try:
             sdocs = (db.collection("Users").document(self._uid)
-                     .collection("Sessions")
+                     .collection("Sesiones")
                      .order_by("SessionIndex")
                      .stream())
             self._sesiones = []
@@ -606,6 +644,7 @@ class Profile(MDScreen):
 
     def _renderizar_tabla(self):
         from kivymd.uix.button import MDIconButton
+        from kivymd.uix.label import MDIcon
 
         tbody = self.ids.tabla_body
         tbody.clear_widgets()
@@ -617,41 +656,99 @@ class Profile(MDScreen):
                 size_hint_y=None, height=dp(40)
             ))
             return
+            
 
-        # Anchos deben coincidir exactamente con la cabecera del KV:
-        # #(0.08) tray(0.12) rep(0.10) err(0.10) stars(0.10)
-        # %dentro(0.12) tiempo(0.10) puntos(0.10) vector(0.18)
-        COL_W = [0.08, 0.12, 0.10, 0.10, 0.10, 0.12, 0.10, 0.10, 0.18]
-
+        # Anchos deben coincidir exactamente con la cabecera del KV
+        COL_W = [0.1, 0.1, 0.1, 0.1, 0.2, 0.1, 0.1, 0.2]
+        #
         for s in self._sesiones:
-            row = MDBoxLayout(orientation="horizontal", size_hint_y=None,
-                              height=dp(38), padding=[dp(4), 0])
+            row = MDBoxLayout(
+                orientation="horizontal",
+                size_hint_y=None,
+                height=dp(36),
+                padding=[dp(4), 0]
+            )
 
+            # Columnas antes de stars
             vals = [
-                str(s.get("SessionIndex", "")),
-                s.get("TrajectoryID", ""),
-                str(s.get("SessionIndex", "")),
-                str(s.get("TotalErrors", "")),
-                "★" * int(s.get("Stars", 0)),
-                f"{s.get('InsideTimePercentage', 0):.1f}%",
-                f"{s.get('TotalTime', 0):.2f}s",
+                str(s.get("SessionIndex", "")),           # #
+                s.get("TrajectoryID", ""),                # Trayectoria
+                str(s.get("SessionIndex", "")),           # Rep.
+                str(s.get("TotalErrors", "")),            # Errores
             ]
 
-            for val, w in zip(vals, COL_W[:-1]):
-                lbl = MDLabel(text=val, font_style="Body2",
-                               halign="center", valign="center",
-                               size_hint_x=w)
+            for val, w in zip(vals, COL_W[:4]):
+                lbl = MDLabel(
+                    text=val,
+                    font_style="Body2",
+                    halign="center",
+                    valign="center",
+                    pos_hint={"center_y": 0.5,"center_x":0.5},
+                    size_hint_x=w
+                )
                 lbl.bind(size=lbl.setter("text_size"))
                 row.add_widget(lbl)
 
-            btn = MDIconButton(icon="download", size_hint_x=COL_W[-1],
-                               theme_icon_color="Custom",
-                               icon_color=(0.13, 0.47, 0.71, 1))
+            # Estrellas
+            stars_layout = MDBoxLayout(
+                orientation="horizontal",
+                spacing=dp(2),
+                size_hint_x=COL_W[4],
+                pos_hint={"center_y": 0.5,"center_x":0.5}
+            )
+
+            num_stars = int(s.get("Stars", 0))
+
+            for i in range(5):
+                icon = "star" if i < num_stars else "star-outline"
+                star = MDIcon(
+                    icon=icon,
+                    theme_text_color="Custom",
+                    pos_hint={"center_y": 0.5,"center_x":0.5},
+                    text_color=(1, 0.75, 0, 1), # Un color ámbar/dorado para que parezcan estrellas reales
+                    )
+                stars_layout.add_widget(star)
+
+            row.add_widget(stars_layout)
+
+            # % Dentro
+            lbl_pct = MDLabel(
+                text=f"{s.get('InsideTimePercentage', 0):.1f}%",
+                font_style="Body2",
+                halign="center",
+                valign="center",
+                size_hint_x=COL_W[5]
+            )
+            lbl_pct.bind(size=lbl_pct.setter("text_size"))
+            row.add_widget(lbl_pct)
+
+            # Tiempo
+            lbl_time = MDLabel(
+                text=f"{s.get('TotalTime', 0):.2f} s",
+                font_style="Body2",
+                halign="center",
+                valign="center",
+                size_hint_x=COL_W[6]
+            )
+            lbl_time.bind(size=lbl_time.setter("text_size"))
+            row.add_widget(lbl_time)
+
+            # Botón descargar
+            btn = MDIconButton(
+                icon="download",
+                size_hint_x=COL_W[7],
+                theme_icon_color="Custom",
+                icon_color=(0.13, 0.47, 0.71, 1)
+            )
             btn.bind(on_release=lambda x, ses=s: self._descargar_vector(ses))
             row.add_widget(btn)
 
-            sep = MDBoxLayout(size_hint_y=None, height=dp(1),
-                               md_bg_color=(0.92, 0.92, 0.92, 1))
+            sep = MDBoxLayout(
+                size_hint_y=None,
+                height=dp(1),
+                md_bg_color=(0.92, 0.92, 0.92, 1)
+            )
+
             tbody.add_widget(row)
             tbody.add_widget(sep)
 
@@ -670,7 +767,7 @@ class Profile(MDScreen):
                 "Stars":                s.get("Stars", ""),
             })
         IDux = self.ids.lbl_uid.text
-        guardar_csv(filas, f"{IDux}_session_metrics.csv")
+        guardar_csv(filas, f"{IDux}_session_metrics.csv", "Descargas por usuario", IDux)
 
     def _descargar_vector(self, sesion):
         puntos = sesion.get("trajectoryPoints", [])
@@ -681,11 +778,13 @@ class Profile(MDScreen):
         for i, p in enumerate(puntos):
             filas.append({
                 "t":  i,
-                "px": p.get("px", "") if isinstance(p, dict) else "",
-                "py": p.get("py", "") if isinstance(p, dict) else "",
-                "pz": p.get("pz", "") if isinstance(p, dict) else "",
+                "x": p.get("x", "") if isinstance(p, dict) else "",
+                "y": p.get("y", "") if isinstance(p, dict) else "",
+                "z": p.get("z", "") if isinstance(p, dict) else "",
             })
-        guardar_csv(filas, f"{self._uid}_{sesion['_id']}_points.csv")
+        IDux = self.ids.lbl_uid.text
+        IDses = sesion.get("_id")
+        guardar_csv(filas, f"{IDux}_{IDses}_points.csv", "Descargas por usuario", self._uid, "Vectores de trayectorias")
 
     def descargar_todos_vectores(self):
         filas = []
@@ -696,27 +795,25 @@ class Profile(MDScreen):
                     "SessionID":      s["_id"],
                     "TrajectoryID":   s.get("TrajectoryID", ""),
                     "t":  i,
-                    "px": p.get("px", "") if isinstance(p, dict) else "",
-                    "py": p.get("py", "") if isinstance(p, dict) else "",
-                    "pz": p.get("pz", "") if isinstance(p, dict) else "",
+                    "x": p.get("x", "") if isinstance(p, dict) else "",
+                    "y": p.get("y", "") if isinstance(p, dict) else "",
+                    "z": p.get("z", "") if isinstance(p, dict) else "",
                 })
         IDux = self.ids.lbl_uid.text
-        guardar_csv(filas, f"{IDux}_all_points.csv")
+        guardar_csv(filas, f"{IDux}_all_points.csv", "Descargas por usuario", IDux)
 
     def abrir_edicion(self):
         # Botón editar: solo si status es pending.
         doc = db.collection("Users").document(self._uid).get()
         if not doc.exists:
             return
-
-        # status = session_status(doc.to_dict())
-
+        
         docConf = db.collection("UnityConfig").document(self._uid).get()
         if docConf.exists:
             conf = docConf.to_dict()
-            current_rep = conf.get("CurrentRepetition", 1)
+            current_rep = conf.get("CurrentRepetition", 1)-1
         else:
-            current_rep = 1
+            current_rep = 0
 
         total = doc.to_dict().get("totalReps", 0)
         status = session_status(current_rep, total)
@@ -750,12 +847,12 @@ class Profile(MDScreen):
             self._dialog_edicion.open()
 
     def _borrar_sesion_y_editar(self):
-        # Borra todas las Sessions del usuario y resetea su estado
+        # Borra todas las Sesiones del usuario y resetea su estado
         self._dialog_edicion.dismiss()
         try:
-            # Borrar subcolección Sessions
+            # Borrar subcolección Sesiones
             sesiones = (db.collection("Users").document(self._uid)
-                        .collection("Sessions").stream())
+                        .collection("Sesiones").stream())
             for s in sesiones:
                 s.reference.delete()
 
@@ -799,12 +896,12 @@ class Profile(MDScreen):
         self._dialog_eliminar.open()
 
     def _eliminar_usuario(self):
-        # Elimina Sessions, Users y UnityConfig del usuario
+        # Elimina Sesiones, Users y UnityConfig del usuario
         self._dialog_eliminar.dismiss()
         try:
             uid = self._uid
-            # Borrar subcolección Sessions
-            for s in db.collection("Users").document(uid).collection("Sessions").stream():
+            # Borrar subcolección Sesiones
+            for s in db.collection("Users").document(uid).collection("Sesiones").stream():
                 s.reference.delete()
             # Borrar documento Users
             db.collection("Users").document(uid).delete()
@@ -828,7 +925,20 @@ class Profile(MDScreen):
 # INFORMATION
 # ==========================================================================================
 class Information(MDScreen):
-    pass
+    def on_enter(self):
+        try:
+            self.ids.img_logo.source = resource_path("logo.png")
+        except Exception:
+            pass
+
+    def copiar_repo(self):
+        from kivy.core.clipboard import Clipboard
+        try:
+            url = self.ids.lbl_repo.text
+            Clipboard.copy(url)
+            print("[Info] URL copiada al portapapeles")
+        except Exception as e:
+            print(f"[Info] Error copiando: {e}")
 
 # ==========================================================================================
 # APP

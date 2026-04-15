@@ -37,7 +37,7 @@ Instrucciones para abrir un proyecto
 
 2.  Ejectuar los permisos y verificar la versión de Python y que esten las librerias
     Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-    .\kivy_venv\Scripts\Activate.ps1
+    .\venv\Scripts\Activate.ps1
     pip list
 
 3.  Activar el Run en el entorno virtual: Ctrl + Shift + P > Select Interpreter > selecciona el venv
