@@ -406,3 +406,7 @@ FodyWeavers.xsd
 # Firebase service account key (DO NOT COMMIT)
 sir-hapt-huro-firebase-adminsdk.json
 
+# Permitir el ejecutable en releases/
+!releases/
+!releases/*.exe
+
