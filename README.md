@@ -5,20 +5,28 @@ La aplicación está compuesta principalmente por dos archivos:
  
 - **`app.py`**: Contiene toda la lógica del programa: autenticación, conexión a Firebase, manejo de datos y navegación entre pantallas.
 - **`app.kv`**: Es el archivo visual. Define cómo se ve la aplicación: botones, colores, formularios y la interfaz en general.
- 
-El archivo **`app.py`** es el encargado de gestionar la comunicación entre ellos, por lo que es el único que se debe ejecutar. 
 
----
 
 ## 📋 Requisitos previos
 
 - Windows 10 o superior
 - Python 3.10 o superior → [Descargar aquí](https://www.python.org/downloads/)
 - Git → [Descargar aquí](https://git-scm.com/downloads)
+- Contar con el archivo de credenciales `sir-hapt-huro-firebase-adminsdk.json` en la misma carpeta del proyecto.
 
 > ⚠️ Al instalar Python, asegúrate de marcar la opción **"Add Python to PATH"**
 
----
+## ⬇️ Descarga rápida del ejecutable
+ 
+Si solo se quiere usar la aplicación sin modificarla, se puede descargar directamente el ejecutable:
+ 
+**[Descargar SIR-HAPT_Manager.exe](https://github.com/almavillanuevag/SIR-HAPT_Manager-HURO/raw/main/releases/SIR-HAPT.exe)**
+ 
+> ⚠️ Antes de ejecutarlo necesitas:
+> - Contar con el archivo de credenciales `sir-hapt-huro-firebase-adminsdk.json` en la misma carpeta del proyecto. 
+ 
+Si Windows bloquea el archivo al abrirlo, consulta la sección [Si Windows bloquea el archivo](#️-si-windows-bloquea-el-archivo) más abajo.
+ 
 
 ## ⚙️Configuración del proyecto
 
