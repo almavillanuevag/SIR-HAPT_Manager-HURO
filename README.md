@@ -27,7 +27,7 @@ El archivo **`app.py`** es el encargado de gestionar la comunicación entre ello
 Abre una terminal y ejecuta:
 
 ```bash
-git clone https://github.com/almavillanuevag/SIR-HAPT-Manager.git
+git clone https://github.com/almavillanuevag/SIR-HAPT_Manager-HURO.git
 cd SIR-HAPT-Manager
 ```
 
@@ -122,3 +122,30 @@ Ctrl + Shift + P → "Select Interpreter" → selecciona el venv
 
 > Nota: No cerrar VSCode mientras se ejecuta el programa.
 
+## ❌ En caso de error
+Desisntalar y volver a instalar el **venv**
+
+1. Desactivar el venv actual
+```bash
+deactivate
+```
+2. Elimina el venv corrompido
+```bash
+rm -r venv
+```
+3. Crear uno nuevo
+```bash
+python -m venv venv
+```
+4. Actívarlo
+```bash
+venv\Scripts\activate
+```
+5. Instalar todo
+```bash
+pip install -r requirements.txt
+```
+Cuando termine volver a intentar
+```bash
+pyinstaller SIR-HAPT_Manager.spec
+```
